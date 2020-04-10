@@ -1,18 +1,22 @@
 import cv2
 import h5py
 from cv2 import aruco
+from paho.mqtt import publish
 
 
-with h5py.File("parametrs_for_undistort", "r") as f:
-    mtx = f["mtx"][()]
-    dist = f["dist"][()]
-    rvecs = f["rvecs"][()]
-    tvecs = f["tvecs"][()]
+# with h5py.File("parametrs_for_undistort", "r") as f:
+#     mtx = f["mtx"][()]
+#     dist = f["dist"][()]
+#     rvecs = f["rvecs"][()]
+#     tvecs = f["tvecs"][()]
 
 
 def undistort(img, mtx, dist):
     undistorted = cv2.undistort(img, mtx, dist)
     return undistorted
+
+cap = cv2.VideoCapture(0)
+
 
 
 class ArucoDetect:
@@ -26,6 +30,10 @@ class ArucoDetect:
         self.detect_2 = False
         self.first_id = first_id
         self.second_id = second_id
+        self.send_1 = False
+        self.send_2 = False
+        self.msgs_1 = [{"topic": "signal", "payload": "first signal"}]
+        self.msgs_2 = [{"topic": "signal", "payload": "second signal "}]
 
     def img_to_gray(self, img):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -54,22 +62,33 @@ class ArucoDetect:
         else:
             self.detect_2 = False
 
+    def send_first_msgs(self):
+        if self.send_1 == False and self.detect_1 == True:
+            publish.multiple(self.msgs_1, hostname="localhost")
+            self.send_1 = True
+
+    def send_second_msgs(self):
+        if self.send_2 == False and self.detect_2 == True:
+            publish.multiple(self.msgs_2, hostname="localhost")
+            self.send_2 = True
+
     def output(self):
         if self.detect_1 and self.detect_2:
             print("See both")
 
         elif self.detect_1:
             print("See id" + str(self.first_id) + " marker")
+            self.send_first_msgs()
 
         elif self.detect_2:
             print("See id" + str(self.second_id) + " marker")
+            self.send_second_msgs()
 
-        elif self.detect_1 == False and self.detect_2 == False:
-            print("Don't see markers")
+        # elif self.detect_1 == False and self.detect_2 == False:
+        #     print("Don't see markers")
 
 
 detect = ArucoDetect(5, 6)
-cap = cv2.VideoCapture(0)
 
 while True:
     _, frame = cap.read()
