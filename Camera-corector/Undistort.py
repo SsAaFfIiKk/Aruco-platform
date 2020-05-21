@@ -6,7 +6,6 @@ import numpy as np
 objpoints = []
 imgpoints = []
 imgs = []
-
 imgs_folder = "set_0"
 img_num = 0
 img_size = None
@@ -19,7 +18,7 @@ objp = np.zeros((rows * cols, 3), np.float32)
 objp[:, :2] = np.mgrid[0:rows, 0:cols].T.reshape(-1, 2)
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
-cam = cv2.VideoCapture(2)
+cam = cv2.VideoCapture(0)
 
 while len(imgs) < len(photos_lst):
     img_name = str(img_num) + "_veb.png"
@@ -39,9 +38,9 @@ while len(imgs) < len(photos_lst):
 
 
 # показывает нахождение доски
-    cv2.imshow(str(img_num), img)
-    cv2.waitKey(420)
-    cv2.destroyAllWindows()
+#     cv2.imshow(str(img_num), img)
+#     cv2.waitKey(420)
+#     cv2.destroyAllWindows()
 
     img_num += 1
     img_size = gray.shape[::-1]
@@ -63,7 +62,7 @@ while True:
         break
 
     elif cv2.waitKey(1) & 0xFf == ord("s"):
-        with h5py.File("parametrs_for_undistort", "w") as f:
+        with h5py.File("parametrs_for_undistort.h5py", "w") as f:
             f.create_dataset("mtx", data=mtx)
             f.create_dataset("dist", data=dist)
             f.create_dataset("rvecs", data=rvecs)

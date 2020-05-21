@@ -15,8 +15,6 @@ def save_images(frame, f_number):
 
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
-cam = cv2.VideoCapture(2)
-
 frame_number = 0
 save = False
 folder_sav = ""
@@ -38,8 +36,9 @@ else:
                 folder_sav = folder_sav[:4] + str(y)
     os.mkdir(folder_sav)
 
-st_time = time()
+cam = cv2.VideoCapture(0)
 
+st_time = time()
 while True:
     _, frame = cam.read()
 

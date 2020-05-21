@@ -2,8 +2,8 @@ import cv2
 from cv2 import aruco
 
 class SearchAruco:
-    def __init__(self, first_id, second_id):
-        self.aruco_dict = aruco.Dictionary_get(aruco.DICT_6X6_250)
+    def __init__(self, size, first_id, second_id):
+        self.aruco_dict = aruco.Dictionary_get(size)
         self.parameters = aruco.DetectorParameters_create()
         self.corners = None
         self.ids = None
@@ -20,6 +20,7 @@ class SearchAruco:
     def detect_marker(self, gray):
         self.corners, self.ids, self.rejectedImgPoints = aruco.detectMarkers(gray, self.aruco_dict,
                                                                              parameters=self.parameters)
+        return self.corners
 
     def draw_markers(self, img):
         frame_markers = aruco.drawDetectedMarkers(img, self.corners, self.ids)
