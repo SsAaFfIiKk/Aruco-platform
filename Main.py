@@ -1,9 +1,9 @@
 import cv2
 import h5py
-import  math
 from cv2 import aruco
 from Undistort import undistort
 from Search_aruco import SearchAruco
+from Draw import Draw
 from Message_sender import SendMessage
 
 with h5py.File("Camera-corector/parametrs_for_undistort.h5py", "r") as f:
@@ -18,11 +18,14 @@ with h5py.File("Camera-corector/parametrs_for_undistort.h5py", "r") as f:
 size = aruco.DICT_6X6_250
 detect = SearchAruco(size, 5, 6)
 
+draw = Draw()
+
 # sender = SendMessage()
 # first_msg = sender.crate_msg("signal", 1)
 # second_msg = sender.crate_msg("signal", 0)
 
 corners = None
+ids = None
 
 cap = cv2.VideoCapture(0)
 
@@ -30,15 +33,15 @@ while True:
     _, frame = cap.read()
 
     undistorted = undistort(frame, mtx, dist)
-
     gray = detect.img_to_gray(frame)
-    corners = detect.detect_marker(gray)
+    corners, ids  = detect.detect_marker(gray)
     detection_1 = detect.check_first_id()
     detection_2 = detect.check_second_id()
     # detect.info()
     # sender.send_first_msg(detection_1, first_msg)
     # sender.send_second_msgs(detection_2, second_msg)
     frame_markers = detect.draw_markers(frame)
+    draw.draw_borders(frame_markers)
 
     cv2.imshow("frame", frame_markers)
 

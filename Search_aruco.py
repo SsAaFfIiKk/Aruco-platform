@@ -20,7 +20,7 @@ class SearchAruco:
     def detect_marker(self, gray):
         self.corners, self.ids, self.rejectedImgPoints = aruco.detectMarkers(gray, self.aruco_dict,
                                                                              parameters=self.parameters)
-        return self.corners
+        return self.corners, self.ids
 
     def draw_markers(self, img):
         frame_markers = aruco.drawDetectedMarkers(img, self.corners, self.ids)
