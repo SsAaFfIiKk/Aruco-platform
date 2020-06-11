@@ -3,10 +3,10 @@ import h5py
 import math
 import numpy as np
 from cv2 import aruco
+from Draw import Draw
 from Undistort import undistort
 from Search_aruco import SearchAruco
-from Draw import Draw
-# from Message_sender import SendMessage
+from Message_sender import SendMessage
 
 with h5py.File("Camera-corector/parametrs_for_undistort.h5py", "r") as f:
     mtx = f["mtx"][()]
@@ -21,6 +21,12 @@ size = aruco.DICT_5X5_250
 
 detect = SearchAruco(size, 11, 12)
 draw = Draw()
+mqtt = SendMessage("localhost")
+turn_left = mqtt.crate_msg("signal", "L")
+turn_right = mqtt.crate_msg("signal", "R")
+forward = mqtt.crate_msg("signal", "F")
+stop = mqtt.crate_msg("signal", "S")
+
 
 ang = 0
 top_point = (320, 140)
@@ -36,12 +42,16 @@ def get_angel(a, b, c):
 
 def decison(ang, l_id, r_id):
     status = "not ready to docking"
+    mqtt.send_msg(stop)
     if l_id and r_id and -2 < ang < 2:
         status = "ready to docking"
+        mqtt.send_msg(forward)
     elif l_id and r_id and ang <= -3:
         status = "need to turn right"
+        mqtt.send_msg(turn_right)
     elif l_id and r_id and ang >= 3:
         status = "need to turn left"
+        mqtt.send_msg(turn_left)
     return status
 
 while True:
