@@ -40,6 +40,7 @@ class SearchAruco:
                     self.detect_left = True
         else:
             self.detect_left = False
+        return self.detect_left
 
     def check_right_id(self):
         if np.all(self.ids != None):
@@ -48,6 +49,7 @@ class SearchAruco:
                     self.detect_right = True
         else:
             self.detect_right = False
+        return self.detect_right
 
     def get_coordinats(self):
         if np.all(self.ids != None):
@@ -66,7 +68,7 @@ class SearchAruco:
                     self.right_x = self.corners[1][0][1][0]
                     self.right_y = self.corners[1][0][1][1]
 
-    def calculate(self):
+    def get_midle(self):
         self.midl_x = (self.right_x + self.left_x) / 2
         self.midl_y = (self.right_y + self.left_x) / 2
 
